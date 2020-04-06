@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import functools
 import logging
@@ -24,9 +25,19 @@ async def shutdown(signal, loop, daemon):
     loop.stop()
 
 
-def main():
+def main(options):
 
-    print("starting bettercap daemon")
+    level = logging.INFO
+    #f options.debug:
+    #    level = logging.DEBUG
+    handler = logging.StreamHandler()
+    #formatter = logging.Formatter('%(asctime)s - %(name)-10s - %(levelname)-8s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(message)s')
+    handler.setFormatter(formatter)
+    handlers = [handler]
+    logging.basicConfig(level=level, handlers=handlers)
+
+    logging.info("starting bettercap daemon")
     daemon = BetterCapDaemon(binary="bin/bettercap", caplet="websocket.cap")
     daemon.start()
 
@@ -41,12 +52,15 @@ def main():
             sig, lambda sig=sig: asyncio.create_task(shutdown(sig, loop, daemon))
         )
 
-    print("starting bettercap agent")
+    logging.info("starting bettercap agent")
     loop.create_task(agent.start())
     loop.run_forever()
 
 
 if __name__ == '__main__':
     # TODO: arguments / options
-    main()
+    parser = argparse.ArgumentParser(description="bettercappy.ws arguments")
+    args = parser.parse_args()
+    options = parser.parse_args()
+    main(options)
 

@@ -24,7 +24,7 @@ class BetterCapClient(object):
             return r.json()
         except Exception as e:
             if r.status_code == 200:
-                print("error while decoding json: error='%s' resp='%s'" % (e, r.text))
+                logging.error("error while decoding json: error='%s' resp='%s'" % (e, r.text))
             else:
                 err = "error %d: %s" % (r.status_code, r.text.strip())
                 if verbose_errors:
@@ -71,7 +71,7 @@ class BetterCapAgent(BetterCapClient):
             try:
                 self.run(f"events.ignore {tag}", verbose_errors=False)
             except Exception as e:
-                print(f"error occurred in setup_events: {e}")
+                logging.error(f"error occurred in setup_events: {e}")
 
     def start_monitor_mode(self):
 
@@ -82,12 +82,12 @@ class BetterCapAgent(BetterCapClient):
             s = self.session()
             for iface in s['interfaces']:
                 if iface['name'] == self._interface:
-                    print(f"found monitor interface: {iface['name']}")
+                    logging.info(f"found monitor interface: {iface['name']}")
                     has_mon = True
                     break
 
             if has_mon is False:
-                print(f"waiting for monitor interface {self._interface} ...")
+                logging.info(f"waiting for monitor interface {self._interface} ...")
                 time.sleep(1)
 
         net_recon_running = self.is_module_running('net.recon')
@@ -107,7 +107,7 @@ class BetterCapAgent(BetterCapClient):
 
 
     async def consumer(self, message):
-        print(message) # NOTE: we can do something (more) usefull with the information 
+        logging.info(message) # NOTE: we can do something (more) usefull with the information 
 
     async def consumer_handler(self, websocket, path):
         # TODO: exception handling when handling messages
@@ -119,7 +119,7 @@ class BetterCapAgent(BetterCapClient):
         # TODO: exception handling during connection setup
         uri = f"ws://{self._username}:{self._password}@{self._hostname}:{self._port}/api/events"
         async with websockets.connect(uri) as websocket:
-            print(f"websocket connection established to {websocket.host}:{websocket.port}")
+            logging.info(f"websocket connection established to {websocket.host}:{websocket.port}")
             await self.consumer_handler(websocket, 'bla')
 
 
