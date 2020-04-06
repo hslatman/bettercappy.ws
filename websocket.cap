@@ -1,0 +1,16 @@
+# API listening on http://127.0.0.1:8901
+set api.rest.address 127.0.0.1
+set api.rest.port 8901
+
+# access credentials; CHANGE THESE!
+set api.rest.username username 
+set api.rest.password password
+
+# enable the REST API and websocket for events
+set api.rest off
+set api.rest.websocket true
+api.rest on
+
+# start passive and active network reconnaissance 
+set net.recon on
+set net.probe on
